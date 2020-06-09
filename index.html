@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Młotek Schmidta</title>
+  <meta name="author" content="Kacper Pietrzyk">
+  <meta name="description"
+    content="Program służący do wyznaczania klasy oraz jednorodności betonu na podstawie przeprowadzonych badań">
+  <meta name="keywords"
+    content="badania nieniszczące, badania sklerometryczne, wytrzymałość na ściskanie, jednorodność betonu, młotek Schmidta, sklerometr">
+  <script src="https://kit.fontawesome.com/58ed338629.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,700&display=swap&subset=latin-ext" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+  <link rel="shortcut icon" href="img/favicon_short.ico">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div class="wrapper">
+    <header class="header">
+      <div>
+        <a href="index.html"><img class="header__logo" src="img/logo.png" alt="logo"></a>
+      </div>
+      <nav class="header__nav nav">
+        <ul class="nav__list">
+          <li class="nav__item">
+            <a class="nav__link nav__link--description" href="#popup-description">Opis działania</a>
+          </li>
+          <li class="nav__item">
+            <a class="nav__link nav__link--signs" href="#popup-signs">Oznaczenia</a>
+          </li>
+          <li class="nav__item">
+            <a class="nav__link nav__link--about" href="#popup-about">O programie</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <section class="initial-data">
+      <fieldset class="initial-data__fieldset">
+        <legend class="initial-data__legend">&nbsp; Dane badanego elementu &nbsp;</legend>
+        <label for="structure">Obiekt:</label>
+        <textarea id="structure" class="initial-data__textarea"></textarea>
+        <label for="element" class="initial-data__label--offset">Element:</label>
+        <textarea id="element" class="initial-data__textarea"></textarea>
+      </fieldset>
+      <fieldset class="initial-data__fieldset initial-data__fieldset--min-width">
+        <legend class="initial-data__legend">&nbsp; Dane ilościowe pomiarów &nbsp;</legend>
+        <div class="input-data">
+          <dfn class="input-data__dfn"
+            data-info="Punkty pomiarowe, w których wykonano badania młotkiem Schmidta, a następnie przeprowadzono badania niszczące. Minimalna ilość punktów pomiarowych typu 1 wynosi 10. Zalecana ilość punktów pomiarowych typu 1 wynosi 15."><span
+              class="far fa-question-circle"></span></dfn>
+          <label for="test-location-type-1">Ilość punktów pomiarowych typu 1:</label>
+          <input class="input-data__input" id="test-location-type-1" type="number">
+        </div>
+        <div class="input-data input-data--offset">
+          <dfn class="input-data__dfn"
+            data-info="Punkty pomiarowe, w których wykonano wyłącznie badania młotkiem Schmidta."><span
+              class="far fa-question-circle"></span></dfn>
+          <label for="test-location-type-2">Ilość punktów pomiarowych typu 2:</label>
+          <input class="input-data__input" id="test-location-type-2" type="number">
+        </div>
+        <div class="input-data">
+          <div>
+            <dfn class="input-data__dfn"
+              data-info="Ilość odczytów liczby odbicia w każdym punkcie pomiarowym. Minimalna ilość odczytów liczby odbicia wynosi 9."><span
+                class="far fa-question-circle"></span></dfn>
+            <label for="readings">Ilość odczytów liczby odbicia:</label>
+          </div>
+          <input class="input-data__input" id="readings" type="number">
+        </div>
+      </fieldset>
+      <div class="initial-data__buttons">
+        <button disabled class="button" id="button-generate-log">Generuj dziennik pomiarów</button>
+        <button disabled class="button" id="button-clear-log">Usuń dziennik pomiarów</button>
+        <button disabled class="button" id="button-calculations">Wykonaj obliczenia</button>
+      </div>
+    </section>
+    <div class="report">
+      <h2 class="report__header--big">Raport z przeprowadzonych badań</h2>
+      <h2 class="report__header--medium">Dane badanego elementu:</h2>
+      <h3 class="report__header">Obiekt:</h3>
+      <p class="report__text"><span id="report-structure"></span></p>
+      <h3 class="report__header">Element:</h3>
+      <p class="report__text"><span id="report-element"></span></p>
+    </div>
+    <main class="main">
+      <h1 id="table-input-1-header" class="main__header hidden">Punkty pomiarowe typu 1 (badania sklerometryczne +
+        badania niszczące)</h1>
+      <div id="table-input-1-div" class="main__table hidden">
+        <table class="table">
+          <caption class="table__caption">Dziennik pomiarów sklerometrycznych
+          </caption>
+          <thead id="thead-input-1">
+          </thead>
+          <tbody id="tbody-input-1">
+          </tbody>
+        </table>
+      </div>
+      <div id="table-input-1-result" class="main__table-result main__table-1 hidden">
+        <div>
+          <h2 class="main__header">Badania nieniszczące:</h2>
+          <p class="main__text">Średnia liczba odbicia: <span id="average-rebound-number"></span></p>
+          <p class="main__text">Odchylenie standardowe: <span id="SD-rebound-number"></span></p>
+        </div>
+        <div>
+          <h2 class="main__header">Badania niszczące:</h2>
+          <p class="main__text">Wytrzymałość średnia: <span id="average-strength"></span> MPa</p>
+          <p class="main__text">Wytrzymałość minimalna: <span id="min-strength"></span> MPa</p>
+          <p class="main__text">Odchylenie standardowe: <span id="SD-strength"></span> MPa</p>
+        </div>
+      </div>
+      <div id="chart-1-box" class="main__chart-container hidden">
+        <canvas id="chart1" width="800" height="450" aria-label="Wykres" role="img"></canvas>
+      </div>
+      <h1 id="table-input-2-header" class="main__header hidden">Punkty pomiarowe typu 2 (tylko badania sklerometryczne)
+      </h1>
+      <div id="table-input-2-div" class="main__table hidden">
+        <table class="table">
+          <caption class="table__caption">Dziennik pomiarów sklerometrycznych
+          </caption>
+          <thead id="thead-input-2">
+          </thead>
+          <tbody id="tbody-input-2">
+          </tbody>
+        </table>
+      </div>
+      <div id="chart-2-box" class="main__chart-container hidden">
+        <canvas id="chart2" width="800" height="450" aria-label="Wykres" role="img"></canvas>
+      </div>
+      <div id="basic-curve" class="main__part hidden">
+        <h2 class="main__header">Podstawowa krzywa regresji</h2>
+        <p class="main__text">f<sub>R</sub> = 1,25 &times; R - 23 gdy 20 &le; R &le; 24</p>
+        <p class="main__text">f<sub>R</sub> = 1,73 &times; R - 34,5 gdy 24 &le; R &le; 50</p>
+      </div>
+      <div id="table-output-1-div" class="main__table hidden">
+        <table class="table">
+          <caption class="table__caption">Wyniki obliczeń parametru przesunięcia podstawowej krzywej regresji</caption>
+          <thead id="thead-output-1">
+          </thead>
+          <tbody id="tbody-output-1">
+          </tbody>
+        </table>
+      </div>
+      <div id="table-output-1-result" class="main__table-result main__table-result--report hidden">
+        <p class="main__text">Średnia różnic wytrzymałości &delta;f<sub>m(n)</sub> = <span
+            id="average-substraction"></span> MPa</p>
+        <p class="main__text">Odchylenie standardowe różnic wytrzymałości s<sub>&delta;</sub> = <span
+            id='SD-substraction'></span> MPa</p>
+      </div>
+      <div id="k1-factor-div" class="hidden">
+        <p class="main__text">Wartość współczynnika k<sub>1</sub> do obliczenia wartości przesunięcia &Delta;f
+          podstawowej krzywej regresji</p>
+        <p class="main__text">k<sub>1</sub> = <span id="k1-factor"></span> (dla poprawnej liczby par wyników badań:
+          <span id="number-of-direct-tests"></span>)
+        </p>
+      </div>
+      <div id="delta-f-div" class="hidden">
+        <p class="main__text">Wartość przesunięcia &Delta;f podstawowej krzywej regresji</p>
+        <p class="main__text">&Delta;f = &delta;f<sub>m(n)</sub> - k<sub>1</sub> &times; s<sub>&delta;</sub> = <span
+            id="delta-f-box"></span> MPa</p>
+      </div>
+      <div id="corrected-curve" class="main__part hidden">
+        <h2 class="main__header">Ostatecznie skorygowana krzywa regresji ma postać:</h2>
+        <p class="main__text">f<sub>is,R</sub> = f<sub>R</sub> + &Delta;f = <span id="corrected-curve-1"></span> gdy 18
+          &le; R &le; 24</p>
+        <p class="main__text">f<sub>is,R</sub> = f<sub>R</sub> + &Delta;f = <span id="corrected-curve-2"></span> gdy 24
+          &le; R &le; 52</p>
+      </div>
+      <div id="chart-3-box" class="main__chart-container main__chart-3 hidden">
+        <canvas id="chart3" width="600" height="450" aria-label="Wykres" role="img"></canvas>
+      </div>
+      <div id="table-output-2-div" class="main__table hidden">
+        <table class="table">
+          <caption class="table__caption">Wytrzymałość betonu na ściskanie</caption>
+          <thead id="thead-output-2">
+          </thead>
+          <tbody id="tbody-output-2">
+          </tbody>
+          <tfoot id="tfoot-output-2">
+          </tfoot>
+        </table>
+      </div>
+      <div id="fck-formulae" class="hidden">
+        <p class="main__text">Obliczenie efektywnej liczby stopni swobody n<sub>eff</sub> związanej z odchyleniem
+          standardowym s:</p>
+        <p class="main__text">n<sub>eff</sub> = <span id="neff"></span></p>
+        <p class="main__text">Obliczenie wytrzymałości charakterystycznej betonu na ściskanie w konstrukcji:</p>
+        <p class="main__text">f<sub>ck,is,1</sub> = f<sub>c,m(m)is</sub> - k<sub>n</sub> x s = <span
+            id="fck-is-1"></span></p>
+        <p class="main__text">f<sub>ck,is2,</sub> = f<sub>c,is,lowest</sub> + M = <span id="fck-is-2"></span></p>
+        <p class="main__text">f<sub>ck,is</sub> = min(f<sub>ck,is,1</sub> ; f<sub>ck,is,2</sub>) = <span
+            id="fck-is-formula"></span></p>
+      </div>
+      <div id="vf-div" class="hidden">
+        <p class=" main__text">Obliczenie współczynnika zmienności v<sub>f</sub> wytrzymałości na ściskanie betonu na
+          podstawie skorygowanej krzywej regresji:</p>
+        <p class="main__text">v<sub>f</sub> = s / f<sub>c,m(m)is</sub> x 100% = <span id="vf"></span>
+        </p>
+      </div>
+      <div id="fck-is-div" class="main__part hidden">
+        <h2 class="main__header">Wytrzymałość charakterystyczna betonu na ściskanie w konstrukcji:</h2>
+        <p class="main__text">f<sub>ck,is</sub> = <span id="fck-is"></span> MPa</p>
+      </div>
+      <div id="start-info" class="main__part">
+        <h2 class="main__header main__header--start">Młotek Schmidta</h2>
+        <p class="main__text main__text--start">Poniżej przedstawiono instrukcję obsługi programu. Szczegółowe
+          informacje znajdują się w zakładkach <span class="main__text--italic">Opis działania</span>, <span
+            class="main__text--italic">Oznaczenia</span> oraz <span class="main__text--italic">O programie.</span></p>
+        <ul>
+          <li class="main__text main__text--start main__text--li">Uzupełnij informacje dotyczące badanego elementu.</li>
+          <li class="main__text main__text--start main__text--li">Określ ilość punktów pomiarowych typu 1, ilość punktów
+            pomiarowych typu 2 oraz ilość odczytów liczby odbicia w każdym punkcie pomiarowym.</li>
+          <li class="main__text main__text--start main__text--li">Wygeneruj dziennik pomiarów przyciskiem "Generuj
+            dziennik pomiarów".</li>
+          <li class="main__text main__text--start main__text--li">Uzupełnij dziennik pomiarów wpisując wartości odczytów
+            liczby odbicia oraz określając kąt ustawienia młotka w trakcie badania.</li>
+          <li class="main__text main__text--start main__text--li">Wygeneruj obliczenia przyciskiem "Wykonaj obliczenia".
+          </li>
+          <li class="main__text main__text--start main__text--li">Wygeneruj raport z obliczeń przyciskiem "Generuj
+            raport".</li>
+        </ul>
+      </div>
+    </main>
+    <section id="final-results" class="output-data hidden">
+      <div>
+        <h2 class="output-data__header">Klasa betonu</h2>
+        <p id="compressive-strength-class" class="output-data__text"></p>
+      </div>
+      <div>
+        <h2 class="output-data__header">Jednorodność betonu</h2>
+        <p id="homogenity-of-conrete" class="output-data__text"></p>
+      </div>
+      <button class="output-data__button button">Generuj raport</button>
+    </section>
+    <div class="report report__standards">
+      <p class="report__text">Opracowanie badań nieniszczących na podstawie:</p>
+      <p class="report__text">- PN-EN 12504-2:2013-03</p>
+      <p class="report__text">- Instrukcja ITB 210/1977</p>
+      <p class="report__text">Wyznaczenie klasy betonu na podstawie:</p>
+      <p class="report__text">- PN-EN 13791:2019-12</p>
+      <p class="report__text">- PN-EN 13791:2008</p>
+      <p class="report__text">Określenie jednorodności betonu na podstawie:</p>
+      <p class="report__text">- PN-B-06250:1975</p>
+    </div>
+    <div class="report report__footer">
+      <p class="report__text">Obliczenia wykonano za pomocą programu <span class="report__text--italic">Młotek
+          Schmidta.</span></p>
+      <img class="report__logo" src="img/logo.png" alt="logo">
+    </div>
+    <footer class="footer">
+      <p class="footer__copyright">Copyright &copy; 2020 Młotek Schmidta | Wszelkie prawa zastrzeżone.</p>
+    </footer>
+    <!-- below are popups from nav-->
+    <div id="popup-description" class="overlay">
+      <div class="popup">
+        <h2 class="popup__header">Opis działania</h2>
+        <a href="#" class="popup__close">&times;</a>
+        <div class="popup__content">Zasada działania programu polega na określeniu przez użytkownika:<br>
+          - danych badanego elementu,<br>
+          - ilości punktów pomiarowych typu 1, w których przeprowadzono badania młotkiem Schmidta, a następnie
+          przeprowadzono badania niszczące,<br>
+          - ilości punktów pomiarowych typu 2, w których przeprowadzono wyłącznie badania młotkiem Schmidta,<br>
+          - ilości odczytów liczby odbicia w każdym punkcie pomiarowym.<br>
+          Jeżeli liczba punktów pomiarowych typu 1 będzie mniejsza niż 10 lub ilość odczytów liczby odbicia będzie
+          mniejsza niż 9 - będzie to sygnalizowane czerwonym kolorem pola. Nie będzie również możliwe wygenerowanie
+          dziennika pomiarów.<br>
+          Program umożliwia wygenerowanie dziennika pomiarów o dowolnej liczbie punktów pomiarowych. Również ilość
+          odczytów liczby odbicia w punktach pomiarowych jest określana przez użytkownika.<br>
+          Kliknięcie przycisku „Generuj dziennik pomiarów” powoduje utworzenie dziennika składającego się z dwóch
+          części. Część pierwsza dziennika, zgodnie z jego nagłówkiem dotyczy punktów pomiarowych, w których po
+          wykonaniu badań młotkiem Schmidta przeprowadzono badania niszczące. Komórki tabeli oznaczone kolorem
+          niebieskim wskazują pola, które uzupełnia użytkownik. Należą do nich pola określające kąt &alpha; nachylenia
+          podłużnej osi młotka w trakcie badania do poziomu. Użytkownik ma możliwość wybrania jednej z pięciu wartości
+          kąta α: -90<sup>o</sup>, -45<sup>o</sup>, 0<sup>o</sup>, 45<sup>o</sup>, 90<sup>o</sup>. Poniżej przedstawiono
+          sposoby ustawienia młotka w trakcie badania oraz odpowiadające im wartości kąta &alpha;, określającego
+          nachylenie osi podłużnej młotka względem poziomu.<br>
+          <img class="popup__img" src="img/hammer_positions.png" alt="pozycje młotka w trakcie badania">
+          W następnych komórkach oznaczonych kolorem niebieskim należy wpisać uzyskane z badań odczyty liczby odbicia w
+          poszczególnych punktach pomiarowych. "Lp." wskazuje numery kolejnych punktów pomiarowych. Wyżej opisane
+          elementy dziennika pomiarów dotyczą zarówno jego pierwszej jak i drugiej części. Pierwsza część dziennika
+          zawiera dodatkowo wyniki badań niszczących betonu. W kolumnie oznaczonej niebieskim kolorem, użytkownik
+          wpisuje uzyskane w badaniach niszczących wartości wytrzymałości betonu na ściskanie w konstrukcji. Jeżeli
+          wszystkie pola dziennika zostały uzupełnione, kliknięcie przycisku „Wykonaj obliczenia” sprawi, że na ekranie
+          zostanie wyświetlona pełna procedura obliczeń wraz z ostatecznymi wynikami.<br>
+          W pierwszej kolejności zostaje wyznaczona mediana dla każdego
+          z punktów pomiarowych. W kolumnach zawierających odczyty liczby odbicia uzupełnione przez użytkownika, każda z
+          komórek zostaje oznaczona kolorem zielonym lub czerwonym. To rozróżnienie kolorystyczne jest określone na
+          podstawie warunku normowego, zgodnie z którym jeżeli więcej niż 20% odczytów liczby odbicia dla danego punktu
+          pomiarowego różni się o więcej niż 30% od mediany tych wyników, to taki punkt pomiarowy należy odrzucić.
+          Komórka z wartością odczytu liczby odbicia oznaczona kolorem czerwonym wskazuje, że ta wartość różni się o
+          więcej niż o 30% od mediany. Jeżeli wartości odczytów liczby odbicia spoza zakresu jest mniej niż 20%
+          wszystkich odczytów, to nie ma to wpływu na dalsze obliczenia.
+          W przypadku odrzuconego punktu pomiarowego jest to sygnalizowane w programie czerwonym kolorem komórek mediany
+          sprowadzonej i wyników badań niszczących.<br>
+          Następnie obliczana jest mediana sprowadzona – jest to wartość mediany z uwzględnieniem współczynnika
+          poprawkowego odczytu ΔL, którego wartość zależy od usytuowania młotka w trakcie badania. Obliczone zostają
+          również wartości f<sub>c,is</sub> wytrzymałości na ściskanie betonu w konstrukcji po zastosowaniu
+          współczynnika
+          korekcyjnego o wartości 0,85 w celu uwzględnienia różnic wytrzymałości betonu twardniejącego w konstrukcji i w
+          warunkach laboratoryjnych. Pod tabelą pierwszej części dziennika pomiarów wyświetlane są wyniki badań
+          niszczących w postaci wartości średniej liczby odbicia oraz odchylenia standardowego liczby odbicia oraz
+          wyniki badań niszczących w postaci wartości średniej, minimalnej oraz odchylenia standardowego wytrzymałości
+          betonu na ściskanie.<br>
+          Pod obiema częściami dziennika pomiarów wyświetlane są wykresy przedstawiające wartości liczby odbicia w
+          poszczególnych punktach pomiarowych. Brak wyświetlanego wyniku oznacza, że jest to punkt pomiarowy, który
+          został odrzucony z uwagi na fakt, że ponad 20% wyników liczby odbicia różniło się od mediany o więcej niż
+          30%.<br>
+          W dalszej części wyświetlane jest równanie podstawowej krzywej regresji, na podstawie którego w następnej
+          tabeli zestawiane są wyniki obliczeń parametru przesunięcia podstawowej krzywej regresji. Pierwsza kolumna tej
+          tabeli zawiera kolejne numery punktów pomiarowych, które będą stosowane w korelacji badań niszczących i
+          nieniszczących. Druga kolumna tabeli zawiera zestawione wartości wytrzymałości na ściskanie określonej na
+          próbkach w badaniach niszczących. Kolumna trzecia przedstawia wartości wytrzymałości na ściskanie określanej
+          na podstawie podstawowej krzywej regresji. Ostatnia, czwarta kolumna tabeli zawiera wartości różnic
+          wytrzymałości określanych w badaniach niszczących i nieniszczących. Jeżeli punkt pomiarowy został wyróżniony
+          kolorem czerwonym, oznacza to, że wartość liczby odbicia określana jako mediana sprowadzona, wyznaczona dla
+          tego punktu pomiarowego jest poza zakresem korelacji. Wynika to z przyjętego sposobu określania korelacji na
+          podstawie Wariantu 2 normy, którego zakres wyznaczania korelacji ogranicza się do wartości liczby odbicia 20 ≤
+          R ≤ 50. W związku z powyższym, taki punkt pomiarowy nie może zostać wykorzystany do wyznaczenia korelacji,
+          która w tej sytuacji zostanie wyznaczona na podstawie pozostałych par wyników badań. Pod tabelą wyświetlane są
+          wyniki w postaci średniej różnic wytrzymałości &delta;<sub>fm(n)</sub> oraz odchylenia standardowego różnic
+          wytrzymałości s<sub>&delta;</sub>.
+          Minimalna liczba par wyników potrzebnych do przeprowadzenia korelacji jest określona w normie i wynosi 9. W
+          przypadku wystąpienia sytuacji polegającej na tym, że liczba odrzuconych punktów pomiarowych będzie na tyle
+          duża, że liczba pozostałych par wyników będzie mniejsza niż 9, program wyświetli stosowny komunikat. Jego
+          pojawienie się sprawia, że konieczne jest powtórne przeprowadzenie badań w taki sposób, aby liczba ważnych par
+          wyników badań wynosiła co najmniej 9.
+          Jeżeli liczba par wyników badań jest wystarczająca do przeprowadzenia korelacji, pod wynikami różnic
+          wytrzymałości zostają wyświetlone dalsze kroki obliczeniowe.<br>
+          Na podstawie liczby par wyników badań zostaje określony współczynnik k<sub>1</sub>. Następnie na podstawie
+          średniej różnic wytrzymałości &delta;<sub>fm(n)</sub>, współczynnika k<sub>1</sub> oraz wartości odchylenia
+          standardowego różnic wytrzymałości s<sub>&delta;</sub> zostaje obliczona wartość przesunięcia &Delta;f
+          podstawowej krzywej regresji. Wartość ta jest następnie uwzględniona w równaniu podstawowej krzywej regresji w
+          efekcie czego wyznaczone zostaje równanie skorygowanej krzywej regresji.Wyznaczenie równania skorygowanej
+          krzywej regresji umożliwia obliczenie wytrzymałości betonu na ściskanie na podstawie odczytów liczby odbicia z
+          badań nieniszczących. W następnym kroku wyświetlana jest tabela przedstawiająca te wartości. Tabela ta zawiera
+          wszystkie punkty pomiarowe z wyjątkiem tych, które zostały odrzucone ze względu na zbyt duże różnice względem
+          mediany. Pierwsza kolumna tabeli zawiera numery kolejnych punktów pomiarowych. Kolumna druga zawiera wartości
+          wytrzymałości betonu na ściskanie określone na próbkach w badaniach niszczących. Punkty pomiarowe, w przypadku
+          których w drugiej kolumnie zamiast wartości liczbowej wyświetla się wartość „-” to punkty drugiej części
+          dziennika pomiarów, a więc te, w których wykonano wyłącznie badania nieniszczące. Trzecia kolumna tabeli
+          zawiera wartości wytrzymałości betonu na ściskanie określone na podstawie skorygowanej krzywej regresji.
+          Ostatnie trzy wiersze tabeli określają: średnią wytrzymałość betonu na ściskanie f<sub>c,m(m)is</sub>,
+          najmniejszą z oznaczanych wartości wytrzymałości betonu na ściskanie f<sub>c,is,lowest</sub> oraz odchylenie
+          standardowe wytrzymałości betonu na ściskanie s. Jeżeli punkt pomiarowy został oznaczony kolorem czerwonym,
+          oznacza to, że wartość liczby odbicia określana jako mediana sprowadzona, wyznaczona dla tego punktu
+          pomiarowego jest poza dopuszczalnym zakresem określania wytrzymałości betonu na ściskanie. Wynika to z
+          przyjętego sposobu określania korelacji na podstawie Wariantu 2 normy. Zgodnie z zapisami normy, tak
+          wyznaczona korelacja może być stosowana do wyznaczania wytrzymałości betonu na ściskanie w zakresie ważności ±
+          2 liczby odbicia co ogranicza zakres wartości liczby odbicia do 18 ≤ R ≤ 52. W związku z powyższym taki punkt
+          pomiarowy nie może zostać wykorzystany do wyznaczenia wytrzymałości betonu na ściskanie i na tym etapie jest
+          odrzucany.<br>
+          Na podstawie wartości odchylenia standardowego wytrzymałości betonu na ściskanie i liczby par wyników badań
+          niszczących i nieniszczących oraz liczby wyników badań pośrednich obliczona zostaje efektywna liczba stopni
+          swobody n<sub>eff</sub>. Na podstawie wartości n<sub>eff</sub> wyznaczana jest wartość charakterystycznego
+          współczynnika kruchości k<sub>n</sub>.<br>
+          Wytrzymałość charakterystyczna betonu na ściskanie w konstrukcji obliczana jest jako mniejsza z dwóch
+          wartości: f<sub>ck,is</sub> = min(f<sub>ck,is,1</sub>; f<sub>ck,is,2</sub>). Wartość f<sub>ck,is,1</sub>
+          obliczana jest na podstawie średniej wytrzymałości betonu na ściskanie określonej ze skorygowanej krzywej
+          regresji f<sub>c,m(m)is</sub>, współczynnika k<sub>n</sub> oraz odchylenia standardowego s. Wartość
+          f<sub>ck,is,2</sub> obliczana jest jako suma wytrzymałości minimalnej oraz współczynnika M. Na podstawie
+          obliczonej wytrzymałości charakterystycznej betonu na ściskanie w konstrukcji f<sub>ck,is</sub> zostaje
+          określona odpowiednia klasa betonu. Obliczany jest również współczynnik zmienności v<sub>f</sub>, który
+          pozwala na określenie jednorodności betonu. Na ekranie wyświetlane są ostateczne wyniki w postaci klasy i
+          jednorodności betonu.<br>
+          Ostatnim etapem pracy z programem jest uzyskanie raportu z przeprowadzonych obliczeń poprzez kliknięcie
+          przycisku „Generuj raport”.
+
+
+
+
+          Badania niszczące należy przeprowadzić zgodnie z PN-EN 12504-1:2019-08 oraz PN-EN 13791:2019-12. Odwierty
+          rdzeniowe należy pobierać z miejsc, w których uprzednio zostały wykonane pomiary młotkiem Schmidta. Badania
+          młotkiem Schmidta należy wykonać zgodnie z zasadami podanymi w PN-EN 12504-2:2013-03. Minimalna liczba par
+          wyników badań niszczących i nieniszczących wynosi 10, co wynika z wymagań zawartych w normie PN-EN
+          13791:2019-12. Minimalna ilość odczytów liczby odbicia w punkcie pomiarowym zgodnie z PN-EN 12504-2:2013-03
+          wynosi 9.
+        </div>
+      </div>
+    </div>
+    <div id="popup-signs" class="overlay">
+      <div class="popup popup--scroll">
+        <h2 class="popup__header">Oznaczenia</h2>
+        <a href="#" class="popup__close">&times;</a>
+        <div class="popup__content"><span class="popup__content--bold">punkt pomiarowy</span> – ograniczony obszar
+          wybrany do pomiarów, w którym oznacza się pojedynczy wynik pomiaru;<br>
+          <span class="popup__content--bold">miejsce pomiarowe</span> – jeden lub kilka elementów konstrukcyjnych, albo
+          prefabrykowanych wyrobów betonowych należących do tej samej populacji. Miejsce pomiarowe zawiera szereg
+          punktów pomiarowych;<br>
+          <span class="popup__content--bold">&Delta;f</span> – wartość przesunięcia podstawowej krzywej regresji;<br>
+          <span class="popup__content--bold">ΔL</span> – współczynnik poprawkowy odczytu z uwagi na pozycję młotka
+          nachylonego do poziomu pod kątem &alpha;;<br>
+          <span class="popup__content--bold">&delta;f</span> – różnica między wytrzymałością oznaczaną na odwiertach
+          rdzeniowych a wartością wytrzymałości wynikającą z podstawowej krzywej regresji dla „i” próbki;<br>
+          <span class="popup__content--bold">&delta;f<sub>m(n)</sub></span> – wartość średnia różnic &delta;f z „n”
+          próbek;<br>
+          <span class="popup__content--bold">&Sigma;(f<sub>c,is,reg</sub>)</span> - suma wytrzymałości na ściskanie
+          wszystkich punktów pomiarowych, obliczonych na podstawie skorygowanej krzywej regresji;<br>
+          <span class="popup__content--bold">M</span> - współczynnik służący do obliczenia wytrzymałości
+          charakterystycznej betonu na ściskanie w konstrukcji, zależny od wartości f<sub>c,is,lowest</sub>;<br>
+          <span class="popup__content--bold">R<sub>ij&alpha;</sub></span> – „j” liczba odbicia w „i” punkcie pomiarowym,
+          przy młotku ustawionym pod kątem &alpha;;<br>
+          <span class="popup__content--bold">R<sub>i&alpha;</sub></span> – mediana odczytów w „i” punkcie pomiarowym,
+          przy młotku ustawionym pod kątem &alpha;;<br>
+          <span class="popup__content--bold">R<sub>mvi(&alpha;=0)</sub></span> – sprowadzona mediana odczytów w „i”
+          punkcie pomiarowym;<br>
+          <span class="popup__content--bold">R<sub>mv</sub></span> – średnia arytmetyczna liczba odbicia ze wszystkich
+          punktów pomiarowych;<br>
+          <span class="popup__content--bold">f<sub>R</sub></span> – równanie podstawowej krzywej regresji;<br>
+          <span class="popup__content--bold">f<sub>c,is,reg</sub></span> - wytrzymałość na ściskanie określona na
+          podstawie skorygowanej krzywej regresji dla „i” próbki. Odpowiada wartości f<sub>is,R</sub>;<br>
+          <span class="popup__content--bold">f<sub>ck,is</sub></span> – wytrzymałość charakterystyczna betonu na
+          ściskanie w konstrukcji;<br>
+          <span class="popup__content--bold">f<sub>c,ic</sub></span> – wytrzymałość na ściskanie uzyskana z badań
+          niszczących;<br>
+          <span class="popup__content--bold">f<sub>c,is</sub></span> – wytrzymałość na ściskanie betonu w konstrukcji
+          (po zastosowaniu współczynnika korekcyjnego 0,85 w celu uwzględnienia różnic wytrzymałości betonu
+          twardniejącego w konstrukcji i w warunkach laboratoryjnych);<br>
+          <span class="popup__content--bold">f<sub>c,is,lowest</sub></span> – najmniejsza z oznaczanych wartości
+          wytrzymałości betonu na ściskanie określona na podstawie skorygowanej krzywej regresji;<br>
+          <span class="popup__content--bold">f<sub>c,m(m)is</sub></span> – średnia arytmetyczna wytrzymałość na
+          ściskanie określona na podstawie skorygowanej krzywej regresji z „m” próbek, gdzie m - liczba wyników
+          wytrzymałości na ściskanie uzyskanych z badań pośrednich dla danego miejsca pomiarowego;<br>
+          <span class="popup__content--bold">f<sub>ck,is,cube</sub></span> – charakterystyczna wytrzymałość betonu na
+          ściskanie w konstrukcji, odpowiadająca wytrzymałości betonu oznaczanej na próbkach sześciennych o długości
+          boku 150 mm;<br>
+          <span class="popup__content--bold">f<sub>ck,is,cyl</sub></span> – charakterystyczna wytrzymałość betonu na
+          ściskanie w konstrukcji, odpowiadająca wytrzymałości betonu oznaczanej na próbkach walcowych o wymiarach 150
+          mm x 300 mm;<br>
+          <span class="popup__content--bold">f<sub>i,is,R</sub></span> – wytrzymałość na ściskanie określona na
+          podstawie skorygowanej krzywej regresji dla „i” próbki;<br>
+          <span class="popup__content--bold">f<sub>is,R</sub></span> – równanie skorygowanej krzywej regresji;<br>
+          <span class="popup__content--bold">f<sub>is,lowest</sub></span> – najmniejsza z oznaczanych wartości
+          wytrzymałości betonu na ściskanie w konstrukcji uzyskanych z badań niszczących;<br>
+          <span class="popup__content--bold">f<sub>m(n),is</sub></span> – średnia wartość wytrzymałości betonu na
+          ściskanie w konstrukcji uzyskana z badań niszczących z „n” próbek;<br>
+          <span class="popup__content--bold">k<sub>1</sub></span> – współczynnik zależny od liczby par wyników, służący
+          do obliczenia wartości przesunięcia &Delta;f podstawowej krzywej regresji;<br>
+          <span class="popup__content--bold">k<sub>n</sub></span> – charakterystyczny współczynnik kruchości, służący do
+          obliczenia wytrzymałości charakterystycznej betonu na ściskanie w konstrukcji, zależny od wartości
+          n<sub>eff</sub>;<br>
+          <span class="popup__content--bold">n<sub>eff</sub></span> – efektywna liczba stopni swobody związana z
+          odchyleniem standardowym s;<br>
+          <span class="popup__content--bold">s<sub>&delta;</sub></span> – odchylenie standardowe różnic wytrzymałości
+          &delta;f;<br>
+          <span class="popup__content--bold">s<sub>R</sub></span> – odchylenie standardowe liczb odbicia;<br>
+          <span class="popup__content--bold">s</span> – odchylenie standardowe wytrzymałości na ściskanie ze
+          skorygowanej krzywej regresji;<br>
+          <span class="popup__content--bold">s<sub>c</sub></span> – składowa odchylenia standardowego wytrzymałości na
+          ściskanie określonej ze skorygowanej krzywej regresji;<br>
+          <span class="popup__content--bold">s<sub>e</sub></span> – składowa odchylenia standardowego wytrzymałości na
+          ściskanie określonej ze skorygowanej krzywej regresji;<br>
+          <span class="popup__content--bold">s<sub>f</sub></span> – odchylenie standardowe wytrzymałości na ściskanie z
+          badań niszczących;<br>
+          <span class="popup__content--bold">v<sub>f</sub></span> – współczynnik zmienności wytrzymałości na ściskanie
+          betonu.<br>
+        </div>
+      </div>
+    </div>
+    <div id="popup-about" class="overlay">
+      <div class="popup">
+        <h2 class="popup__header">Informacje o programie</h2>
+        <a href="#" class="popup__close">&times;</a>
+        <div class="popup__content">Program Młotek Schmidta został utworzony w celu wyznaczania klasy oraz jednorodności
+          betonu na podstawie przeprowadzonych badań. Program został wykonany w oparciu o normy PN-EN 13791:2019-12 oraz
+          PN-EN 12504-2:2013-03. Ze względu na fakt, że w normie PN-EN 13791:2019-12 nie zamieszczono jednoznacznego
+          sposobu wyznaczenia właściwej korelacji, wyznaczenie odpowiedniej korelacji wyników badań niszczących z
+          wynikami badań sklerometrycznych wykonano na podstawie Wariantu 2 normy PN-EN 13791:2008. Wytrzymałość betonu
+          określa się poprzez przesunięcie podstawowej krzywej regresji do poziomu, który jest określony na podstawie
+          odwiertów rdzeniowych i badań przeprowadzonych młotkiem Schmidta. W ten sposób mogą być określane parametry
+          wytrzymałościowe elementów wykonanych z tej samej partii betonu. Po wyznaczeniu skorygowanej krzywej regresji
+          możliwe jest określenie wytrzymałości na ściskanie betonu, a tym samym klasy betonu. Zastosowanie do
+          wyznaczenia korelacji Wariantu 2 ogranicza zakres stosowania programu do miejsc pomiarowych, w których liczba
+          odbicia w poszczególnych punktach pomiarowych mieści się w zakresie od 18 do 52, a oceniany beton należy do
+          populacji typowych betonów, wykonanych z tych samych materiałów i w ten sam sposób. Według PN-EN 13791:2008
+          obliczenia oparte są na badaniu odwiertów rdzeniowych, których długość jest równa średnicy lub o proporcji
+          wymiarów 2:1 i średnicy nie mniejszej niż 50 mm. Przy zastosowaniu powyższych wymiarów próbek oraz krzywych
+          regresji, które wykorzystuje program uzyskuje się wynik wytrzymałości betonu na ściskanie w konstrukcji, który
+          odpowiada wytrzymałości określanej na próbkach sześciennych. W celu uzyskania miarodajnych wyników,
+          wprowadzane do programu wyniki badań niszczących powinny stanowić wartości uzyskane w badaniach w maszynie
+          wytrzymałościowej wraz z uwzględnieniem ewentualnych czynników mających wpływ na wytrzymałość na ściskanie
+          takich jak m.in. wilgotność czy wiek betonu. Program nie uwzględnia powyższych czynników w obliczeniach badań
+          nieniszczących z uwagi na korelację z wynikami badań niszczących, w których to czynniki te zostaną
+          uwzględnione. Do opracowania programu wykorzystano również Instrukcję ITB 210/1977 na podstawie której
+          przyjęto wartości współczynnika poprawkowego odczytu z uwagi na położenie młotka w trakcie badań nachylonego
+          pod kątem innym niż 0 stopni względem poziomu oraz normę PN-B-06250:1975 według której przeprowadzono
+          klasyfikację jednorodności betonu na podstawie współczynnika zmienności. Ocena jednorodności betonu na
+          podstawie współczynnika zmienności ograniczona jest do betonów klas C8/10 - C40/50, ograniczenie to wynika z
+          zakresu określonego przez normę PN-B-06250:1975.
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="js/main.js"></script>
+</body>
+
+</html>
