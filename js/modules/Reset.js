@@ -44,6 +44,9 @@ const clearMeasurementLog = () => {
   Data.fckDiv.classList.add('hidden');
   Data.finalResults.classList.add('hidden');
 
+  document.getElementById('structure').value = '';
+  document.getElementById('element').value = '';
+
   if (chartsAreShown) {
     if (chart1) {
       chart1.destroy();
