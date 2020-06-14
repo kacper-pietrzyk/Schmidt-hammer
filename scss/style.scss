@@ -22,67 +22,96 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding: 0 60px;
+  padding: 0 15px;
 }
 
 .header {
   flex-basis: 70px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   padding-bottom: 10px;
+  position: relative;
 
   &__logo {
-    height: 50px;
+    height: 40px;
   }
 }
 
 .nav {
-  &__list {
-    display: flex;
-    padding-right: 20px;
+  width: 100%;
+}
+
+.nav__list {
+  display: none;
+  margin: 30px 0;
+  padding: 10px;
+
+  &--active {
+    text-align: center;
+  }
+}
+
+.nav__item {
+  margin: 6px 0;
+  border-bottom: 2px solid $color-background-section;
+  list-style: none;
+}
+
+.nav__link {
+  color: $color-light-gray;
+  font-size: $font-size-m;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+
+.nav__icon {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  color: white;
+
+  &:hover {
+    color: #ddd;
   }
 
-  &__item {
-    list-style: none;
+  &--bar {
+    width: 30px;
+    height: 4px;
+    margin: 5px 0;
+    background-color: $color-light-gray;
+    transition: .4s;
+  }
+}
 
-    &:nth-child(2) {
-      padding: 0 15px;
-    }
+.change {
+  & .nav__icon--bar1 {
+    transform: rotate(-45deg) translate(-3px, 10px);
   }
 
-  &__link {
-    color: $color-light-gray;
-    font-size: $font-size-s;
-    text-decoration: none;
-    transition: color .2s;
+  & .nav__icon--bar2 {
+    opacity: 0;
+  }
 
-    &:hover {
-      color: #fff;
-      border-bottom: 1px solid #fff;
-    }
+  & .nav__icon--bar3 {
+    transform: rotate(45deg) translate(-3px, -10px);
   }
 }
 
 .initial-data {
-  flex-basis: 20vh;
   display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 20px 0;
-  background-color: $color-background-section;
+  flex-direction: column;
+  justify-content: flex-start;
   border-radius: 20px;
   font-size: $font-size-xs;
 
   &__fieldset {
     display: flex;
     flex-direction: column;
+    margin: 25px 0;
     padding: 15px 25px 30px 25px;
+    background-color: $color-background-section;
     border-radius: 20px;
-
-    &--min-width {
-      min-width: 340px;
-    }
   }
 
   &__legend {
@@ -91,7 +120,7 @@ body {
 
   &__textarea {
     height: 50px;
-    width: 300px;
+    width: 100%;
     padding: 3px;
     background-color: $color-light-gray;
     font-family: $font-family-default;
@@ -114,6 +143,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+    margin-top: 25px;
   }
 }
 
@@ -150,7 +180,7 @@ body {
       position: absolute;
       top: 20px;
       left: -10px;
-      width: 315px;
+      width: 80vw;
       padding: 10px;
       opacity: 0;
       background: $color-light-gray;
@@ -217,6 +247,7 @@ input[type=number] {
 }
 
 .button {
+  margin: 10px 0;
   padding: 10px 20px;
   background-color: $color-light-gray;
   border: none;
@@ -280,15 +311,15 @@ input[type=number] {
   &__table {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     padding: 30px 0;
   }
 
   &__table-result {
     display: flex;
-    justify-content: space-around;
-    padding-bottom: 40px;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: 20px;
   }
 
   &__part {
@@ -296,7 +327,7 @@ input[type=number] {
   }
 
   &__chart-container {
-    width: 40vw;
+    width: 90vw;
     margin: 20px auto;
   }
 }
@@ -365,11 +396,10 @@ input[type=number] {
 }
 
 .output-data {
-  flex-basis: 15vh;
   display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 20px 0;
+  flex-direction: column;
+  align-items: baseline;
+  padding: 20px 10px;
   background-color: $color-background-section;
   border-radius: 20px;
 
@@ -390,6 +420,7 @@ input[type=number] {
 
   &__copyright {
     font-size: $font-size-xs;
+    text-align: center;
   }
 }
 
@@ -416,18 +447,14 @@ input[type=number] {
 
 .popup {
   position: relative;
-  width: 60%;
+  width: 90vw;
   max-height: 70%;
   height: 80%;
-  margin: 60px auto;
-  padding: 25px;
+  margin: 20px auto;
+  padding: 15px;
   background: $color-light-gray;
   border-radius: 10px;
   transition: all 5s ease-in-out;
-
-  &--scroll {
-    height: 600px;
-  }
 
   &__header {
     padding-bottom: 10px;
@@ -469,7 +496,7 @@ input[type=number] {
 }
 
 .warning {
-  margin: 30px 130px;
+  margin: 30px;
   color: $color-red;
   font-size: $font-size-l;
   font-weight: 700;

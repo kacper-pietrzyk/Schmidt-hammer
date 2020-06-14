@@ -853,3 +853,24 @@ export {
   validConvertedMediansTable1,
   validConvertedMediansTable2
 };
+
+function showMenu() {
+  const navIcon = document.querySelector('.nav__icon');
+  const navList = document.querySelector('.nav__list');
+  const logo = document.querySelector('.header__logo');
+
+  navIcon.classList.toggle('change');
+
+  if (navList.style.display === 'block') {
+    navList.style.display = 'none';
+    navList.classList.remove('nav__list--active');
+    logo.style.display = 'block';
+  } else {
+    navList.style.display = 'block';
+    navList.classList.add('nav__list--active');
+    logo.style.display = 'none';
+  }
+}
+
+const menu = document.querySelector('.nav__icon');
+menu.addEventListener('click', showMenu);

@@ -1,0 +1,164 @@
+@media (max-width: 500px) {
+  .main__chart-3 {
+    display: none;
+  }
+}
+
+@media (min-width: 480px) {
+  .wrapper {
+    padding: 0 60px;
+  }
+}
+
+@media (min-width: 1024px) {
+
+  .header {
+    align-items: flex-end;
+  }
+
+  .header__logo {
+    height: 50px;
+  }
+
+  .nav {
+    width: auto;
+
+    &__list {
+      display: flex;
+      margin: 0;
+      padding: 0 20px 0 0;
+    }
+
+    &__item {
+      margin: 0;
+      border-bottom: none;
+
+
+      &:nth-child(2) {
+        padding: 0 15px;
+      }
+    }
+
+    &__link {
+      font-size: $font-size-s;
+      transition: color .2s;
+
+      &:hover {
+        color: #fff;
+        border-bottom: 1px solid #fff;
+      }
+    }
+
+    &__icon {
+      display: none;
+    }
+  }
+
+  .initial-data {
+    flex-basis: 20vh;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px 0;
+    background-color: $color-background-section;
+
+    &__fieldset {
+      margin: 0;
+      background-color: none;
+
+      &--min-width {
+        min-width: 340px;
+      }
+    }
+
+    &__buttons {
+      margin: 0;
+    }
+  }
+
+  .input-data__dfn::after {
+    width: 315px;
+  }
+
+  .button {
+    margin: 0;
+  }
+
+  .main {
+
+    &__table {
+      justify-content: center;
+      align-items: center;
+    }
+
+    &__table-result {
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: stretch;
+      padding-bottom: 40px;
+    }
+
+    &__chart-container {
+      width: 40vw;
+    }
+  }
+
+  .output-data {
+    flex-basis: 15vh;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px 0;
+  }
+
+  .popup {
+    width: 60%;
+    margin: 60px auto;
+    padding: 25px;
+
+    &--scroll {
+      height: 600px;
+    }
+  }
+
+  .warning {
+    margin: 30px 130px;
+  }
+}
+
+@media (min-width: 1280px) {
+
+  .initial-data__textarea {
+    width: 300px;
+  }
+
+  // .main {
+
+  //   &__table {
+  //     justify-content: center;
+  //     align-items: center;
+  //   }
+
+  //   &__table-result {
+  //     flex-direction: row;
+  //     justify-content: space-around;
+  //     align-items: stretch;
+  //     padding-bottom: 40px;
+  //   }
+
+  //   &__chart-container {
+  //     width: 40vw;
+  //   }
+  // }
+
+  // .output-data {
+  //   flex-basis: 15vh;
+  //   flex-direction: row;
+  //   justify-content: space-around;
+  //   padding: 20px 0;
+  // }
+
+  // .warning {
+  //   margin: 30px 130px;
+  // }
+}
