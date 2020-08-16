@@ -3,7 +3,7 @@
 Web application for civil engineering, which allows conduct concrete strength analysis based on the results of sclerometric tests performed with a Schmidt hammer. The final results are concrete class and homogeneity of concrete. 
 ## Technologies
 * HTML
-* CSS
+* SCSS
 * JavaScript
 ## Usage
 Schmidt-hammer app can be run here: \
