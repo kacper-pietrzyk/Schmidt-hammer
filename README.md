@@ -9,7 +9,7 @@ Web application for civil engineering, which allows conduct concrete strength an
 Schmidt-hammer app can be run here: \
 https://kacper-pietrzyk.github.io/Schmidt-hammer/ \
 Detailed information about how the application works can be find in "Opis działania" and "O programie" tabs.
-## Examples of use
+## Example of use
 The input data in Schmidt-hammer app are the test results performed in a building or on a construction site (rebound-readings from Schmidt hammer and results of destructive tests). \
 If you want to try this app, you can use the following data: \
 Ilość punktów pomiarowych typu 1: 11 \
